@@ -22,6 +22,7 @@ urlpatterns = [
     path('login/', login),
     path('signin', signin),
     path('signout',signout),
+    path('index',index),
 
-    path('customer/',include('mrg.urls'))
+    path('mrg/',include('mrg.urls'))
 ]

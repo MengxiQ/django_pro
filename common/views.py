@@ -14,7 +14,7 @@ def login(request):
 def signin(request):
     name = request.POST.get("name")
     password = request.POST.get("password")
-    # print(name,password)
+    print(name,password)
     user = authenticate(username=name, password=password)
     if user is not None:
         if user.is_active:
@@ -22,18 +22,24 @@ def signin(request):
                 # login函数和本地函数重名所以写了全路径
                 django.contrib.auth.login(request, user)
                 request.session['usertype'] = 'mgr'
+                request.session['name'] = name
 
-                return HttpResponseRedirect(render(request, 'success.html',context={'name': name}))
+                return JsonResponse({'ret':1,'msg': '登录成功'})
             else:
                 # 用户不是超级管理员
-                return HttpResponse(render(request, 'login.html',context={'msg':'用户不是超级管理员'}))
+                return JsonResponse({'ret':0,'msg': '用户不是超级管理员'})
         else:
             # 用户被禁用
-            return HttpResponse(render(request, 'login.html', context={'msg':'用户被禁用'}))
+            return JsonResponse({'ret':0,'msg': '用户被禁用'})
         # 用户名或者密码错误
     else:
-        return HttpResponse(render(request, 'login.html',context={'msg':'用户名或者密码错误'}))
+        return JsonResponse({'ret':0,'msg': '用户名或者密码错误'})
 
 def signout(request):
     logout(request)
-    return HttpResponse(render(request,'login.html'))
+    return HttpResponseRedirect('/login')
+
+def index(request):
+    name = request.session['name']
+    # print(name)
+    return HttpResponse(render(request, 'index.html', context={'name': name}))
